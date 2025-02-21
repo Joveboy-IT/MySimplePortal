@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced User Authentication</title>
+    <style>
+        /* CHAPTER 1 - INTRODUCTION TO WEB PAGE PROGRAMMING */
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: af0303; } 
+        input, button { margin: 10px; padding: 8px; font-size: 16px; }
+        #logoutSection { display: none; }
+    </style>
+</head>
+<body>
+
+    <h1>User Authentication System</h1>
+
+    <!-- Registration Form -->
+    <div id="registerSection">
+        <h2>Register</h2>
+        <input type="text" id="regUsername" placeholder="Enter Username"><br>
+        <input type="password" id="regPassword" placeholder="Enter Password"><br>
+        <input type="checkbox" id="showPasswordReg"> Show Password<br>
+        <button id="registerBtn">Register</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginSection">
+        <h2>Login</h2>
+        <input type="text" id="loginUsername" placeholder="Enter Username"><br>
+        <input type="password" id="loginPassword" placeholder="Enter Password"><br>
+        <input type="checkbox" id="showPasswordLogin"> Show Password<br>
+        <button id="loginBtn">Login</button>
+    </div>
+
+    <!-- Logout Section -->
+    <div id="logoutSection">
+        <h1>Welcome, <span id="userDisplay"></span>!</h1>
+        <button id="logoutBtn">Logout</button>
+    </div>
+
+    <script>
+        // CHAPTER 2 - JAVASCRIPT ESSENTIALS
+        // Function to get users from localStorage or return an empty array
+        function getUsers() {
+            return JSON.parse(localStorage.getItem("users")) || [];
+        }
+
+        // Function to save users to localStorage
+        function saveUsers(users) {
+            localStorage.setItem("users", JSON.stringify(users));
+        }
+
+        // CHAPTER 3 - Logical Statements
+        function registerUser() {
+            let username = document.getElementById("regUsername").value.trim();
+            let password = document.getElementById("regPassword").value.trim();
+
+            if (!username || !password) {
+                alert("Username and password cannot be empty!");
+                return;
+            }
+
+            let users = getUsers();
+
+            // Check if username already exists
+            if (users.some(user => user.username === username)) {
+                alert("Username already exists! Try another.");
+                return;
+            }
+
+            // CHAPTER 6 - Built-in JavaScript Methods (btoa for encoding passwords)
+            let hashedPassword = btoa(password);
+            users.push({ username, password: hashedPassword });
+            saveUsers(users);
+            alert("Registration successful! You can now log in.");
+
+            // CHAPTER 7 - The Document Object Model (The DOM) - Updating elements
+            document.getElementById("regUsername").value = "";
+            document.getElementById("regPassword").value = "";
+        }
+
+        function loginUser() {
+            let username = document.getElementById("loginUsername").value.trim();
+            let password = document.getElementById("loginPassword").value.trim();
+
+            let users = getUsers();
+            let foundUser = users.find(user => user.username === username);
+
+            // Validate user credentials
+            if (foundUser && foundUser.password === btoa(password)) {
+                alert("Login successful!");
+                document.getElementById("userDisplay").innerText = username;
+                toggleSections(true);
+                document.body.style.backgroundColor = "0e2a6c"; /* Dark blue */
+            } else {
+                alert("Invalid username or password!");
+            }
+            document.getElementById("loginUsername").value = "";
+            document.getElementById("loginPassword").value = "";
+        }
+
+        function logoutUser() {
+            alert("Logged out successfully!");
+            toggleSections(false);
+            document.body.style.backgroundColor = "#8B0000"; /* Dark red */
+        }
+
+        // CHAPTER 4 - Loops and Arrays (Using loops to update elements dynamically)
+        function toggleSections(isLoggedIn) {
+            document.getElementById("registerSection").style.display = isLoggedIn ? "none" : "block";
+            document.getElementById("loginSection").style.display = isLoggedIn ? "none" : "block";
+            document.getElementById("logoutSection").style.display = isLoggedIn ? "block" : "none";
+        }
+
+        // CHAPTER 8 - Interactive Content and Event Listeners
+        document.getElementById("registerBtn").addEventListener("click", registerUser);
+        document.getElementById("loginBtn").addEventListener("click", loginUser);
+        document.getElementById("logoutBtn").addEventListener("click", logoutUser);
+
+        // Event listener to show/hide password
+        document.getElementById("showPasswordReg").addEventListener("change", function() {
+            document.getElementById("regPassword").type = this.checked ? "text" : "password";
+        });
+
+        document.getElementById("showPasswordLogin").addEventListener("change", function() {
+            document.getElementById("loginPassword").type = this.checked ? "text" : "password";
+        });
+    </script>
+
+</body>
+</html>
